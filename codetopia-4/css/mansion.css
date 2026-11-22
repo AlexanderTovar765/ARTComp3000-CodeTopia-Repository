@@ -1,0 +1,19 @@
+/* Murder at SQLeviathan Mansion: the spooky title card. */
+.mt{position:fixed;inset:0;z-index:400;background:#05040c;display:grid;place-items:center;animation:mtin .9s ease-out}
+.mr{z-index:399;animation:none;cursor:pointer}
+.mt.out{opacity:0;transition:opacity .6s}
+.mt canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+.mt-in{position:relative;display:grid;gap:12px;justify-items:center;text-align:center;padding:0 16px;margin-top:-12vh}
+.mt-kick{margin:0;font:700 15px var(--font-code);color:#7be08a;letter-spacing:.08em;text-shadow:0 0 8px #1c6a3a}
+.mt-logo{margin:0;display:grid;justify-items:center;gap:4px;font-family:var(--font-ui);font-weight:600;line-height:1;color:#ece4c8}
+.mt-l1,.mt-l3{font-size:clamp(20px,4.4vw,40px);letter-spacing:.42em;text-indent:.42em;color:#c9bfa0;text-shadow:0 3px 0 #5a0c16,0 6px 0 #0a0408}
+.mt-l2{display:flex;flex-wrap:wrap;justify-content:center;font-size:clamp(42px,11vw,116px);letter-spacing:.02em}
+.mt-l2 span{position:relative;display:inline-block;color:#ece4c8;text-shadow:0 4px 0 #8a1220,0 8px 0 #1a0510,0 0 22px rgba(160,20,40,.5);animation:mtflick 5s steps(1) infinite;animation-delay:calc(var(--i)*-.37s)}
+.mt-l2 span.sq{color:#8fe89a;text-shadow:0 4px 0 #1c6a3a,0 8px 0 #07140c,0 0 22px rgba(80,220,120,.45)}
+.mt-l2 span::after{content:"";position:absolute;left:46%;top:92%;width:.07em;height:.18em;background:#b01428;border-radius:0 0 .05em .05em;animation:mtdrip 3.2s ease-in infinite;animation-delay:calc(var(--i)*-.6s)}
+.mt-tag{margin:6px 0 4px;font:600 clamp(16px,2.4vw,22px) var(--font-ui);color:#d8cfb4;text-shadow:0 2px 0 #000}
+.mt-btn{background:#7a1020;color:#f6ecd0;border-color:#2a0610}
+@keyframes mtin{from{opacity:0}to{opacity:1}}
+@keyframes mtflick{0%,93%,100%{opacity:1}94%{opacity:.35}95%{opacity:1}97%{opacity:.6}98%{opacity:1}}
+@keyframes mtdrip{0%{transform:translateY(0) scaleY(.3);opacity:0}15%{opacity:1;transform:translateY(0) scaleY(1)}70%{transform:translateY(.25em);opacity:1}100%{transform:translateY(.4em);opacity:0}}
+@media (prefers-reduced-motion:reduce){.mt{animation:none}.mt-l2 span,.mt-l2 span::after{animation:none}.mt-l2 span::after{opacity:1}}

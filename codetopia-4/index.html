@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Codetopia</title>
+<meta name="description" content="Codetopia: a pixel-art RPG that teaches HTML and C++ by making you type the spells.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&family=Pixelify+Sans:wght@400;600&display=swap">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/battle.css">
+<link rel="stylesheet" href="css/sheets.css">
+<link rel="stylesheet" href="css/screens.css">
+<link rel="stylesheet" href="css/tower.css">
+<link rel="stylesheet" href="css/guild.css">
+<link rel="stylesheet" href="css/plot.css">
+<link rel="stylesheet" href="css/skills.css">
+<link rel="stylesheet" href="css/village.css">
+<link rel="stylesheet" href="css/mansion.css">
+<link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand"><i>&lt;/&gt;</i>Codetopia</div>
+    <div class="top-r">
+      <span class="stat coin">Coins<b id="stCoins">0</b></span>
+      <span class="stat">Level<b id="stLvl">1</b></span>
+      <span class="stat">Reviews due<b id="stDue">0</b></span>
+      <span class="stat adm" id="stAdmin" hidden>Admin</span>
+      <span class="stat" id="stDiffWrap">Difficulty<b id="stDiff">normal</b></span>
+      <button class="hbtn sndbtn" type="button">Sound</button>
+      <button class="hbtn" id="bMap" type="button">&larr; Back to map</button>
+    </div>
+  </header>
+
+  <section class="scene" id="scene" aria-label="Battle scene">
+    <canvas class="bg" id="bg" aria-hidden="true"></canvas>
+    <div class="plates">
+      <div class="plate hero-plate">
+        <div class="nm"><span id="heroName">Apprentice</span><span class="hp" id="heroHpTxt">100/100</span></div>
+        <div class="bar"><div class="fill" id="heroFill"></div></div>
+      </div>
+      <div class="plate foe-plate">
+        <div class="nm"><span id="foeName">Syntax Slime</span><span class="hp" id="foeHpTxt">90/90</span></div>
+        <div class="bar"><div class="fill" id="foeFill"></div></div>
+        <div class="intent" id="intent"></div>
+        <div class="weak" id="weak"></div>
+      </div>
+    </div>
+    <div class="stage">
+      <div class="actor hero" id="hero" role="img" aria-label="Your character, an apprentice mage"><div class="body" id="heroBody"></div></div>
+      <div class="actor foe" id="foe" role="img"><div class="body" id="foeBody"></div></div>
+    </div>
+    <div class="fx" id="fx"></div>
+    <div class="ticker" id="ticker" role="status" aria-live="polite">Choose a level on the map.</div>
+    <div class="overlay" id="overlay" hidden><div class="card" id="card"></div></div>
+  </section>
+
+  <section class="deck" aria-label="Actions">
+    <div class="actions" id="actions" role="group" aria-label="Choose an action"></div>
+    <div class="console" id="console">
+      <div class="idle" id="idle">
+        <h2 id="idleTitle">Pick an action</h2>
+        <p id="idleText"></p>
+        <p class="last" id="idleLast" hidden></p>
+      </div>
+      <div class="picks" id="picks" hidden>
+        <h2 id="picksTitle">Choose a spell</h2>
+        <p class="sub" id="picksSub"></p>
+        <div class="pickrow" id="pickrow"></div>
+      </div>
+      <div class="lesson" id="lesson" hidden>
+        <div class="info">
+          <div class="meta" id="lMeta"></div>
+          <h2 id="lTitle"></h2>
+          <p class="goal" id="lGoal"></p>
+          <div class="bugbox" id="lBug" hidden></div>
+          <p id="lConcept"></p>
+          <p class="effect" id="lEffect"></p>
+        </div>
+        <div>
+          <div class="editor" id="editor">
+            <div class="code" id="code" aria-hidden="true"></div>
+            <textarea id="codeIn" rows="1" spellcheck="false" autocomplete="off" autocapitalize="off" autocorrect="off" enterkeyhint="enter"></textarea>
+          </div>
+          <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+          <div class="foot">
+            <div class="result paper" id="result"><span class="lab">Result</span><div class="out" id="preview"></div></div>
+            <button class="sbtn" id="hint" type="button">Hint</button>
+            <button class="sbtn" id="back" type="button">Back</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- world map -->
+<div class="sheet" id="map" role="dialog" aria-modal="true" aria-labelledby="mapTitle">
+  <div class="sheet-in">
+    <div class="sheet-top">
+      <h1 id="mapTitle">Codetopia</h1>
+      <div class="row">
+        <button class="hbtn lang-btn" id="mLang" type="button">&larr; Back to village</button>
+        <button class="hbtn" id="mAdmin" type="button" aria-pressed="false">Admin</button>
+        <button class="hbtn" id="mClose" type="button">Back to battle</button>
+      </div>
+    </div>
+    <p class="sub" id="mapSub">Ten levels teach the fundamentals of HTML. Clear a level to unlock the next. Spells you have already learned come back for review, and the game adapts to how you are doing.</p>
+    <div class="mapinfo" id="mapinfo"></div>
+    <div class="mentor" id="mentor" aria-live="polite"></div>
+    <div class="wmap" id="wmap"><canvas id="wmBg" class="wm-bg" aria-hidden="true"></canvas><svg id="wmPath" class="wm-path" preserveAspectRatio="none" aria-hidden="true"></svg><ol class="wm-nodes" id="trail"></ol></div>
+    <div class="wm-card" id="wmCard" aria-live="polite"></div>
+    <div class="row"><button class="hbtn" id="mReset" type="button">Reset progress</button></div>
+  </div>
+</div>
+
+<!-- spellbook -->
+<div class="sheet" id="book" role="dialog" aria-modal="true" aria-labelledby="bookTitle" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top"><h1 id="bookTitle">Spellbook</h1><div class="row"><button class="hbtn" id="bClose" type="button">Close</button></div></div>
+    <div class="mentor lib" id="librarian" aria-live="polite"></div>
+    <p class="sub" id="bookSub"></p>
+    <div class="bookgrid" id="bookgrid"></div>
+  </div>
+</div>
+
+<!-- unlockables -->
+<div class="sheet" id="unl" role="dialog" aria-modal="true" aria-labelledby="unlTitle" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top"><h1 id="unlTitle">Unlockables</h1><div class="row"><button class="hbtn" id="uClose" type="button">Back to map</button></div></div>
+    <div class="ustats" id="unlStats" aria-live="polite"></div>
+    <div class="utabs" role="tablist" aria-label="Unlockables">
+      <button class="utab" role="tab" id="tabShop" type="button" aria-selected="true" aria-controls="shopView">Shop</button>
+      <button class="utab" role="tab" id="tabOwn" type="button" aria-selected="false" aria-controls="ownView" tabindex="-1">Owned <span id="ownCount"></span></button>
+    </div>
+    <div id="shopView" role="tabpanel" aria-labelledby="tabShop">
+      <div class="shop" id="shop"><canvas id="shopCv" width="176" height="84" aria-hidden="true"></canvas>
+        <button class="shop-hit" id="shopKeeper" type="button" aria-label="Talk to the shopkeeper"></button>
+        <div class="shop-say"><span class="shop-name">The Wandering Trader</span><p id="shopSay" aria-live="polite"></p></div></div>
+      <h2 class="shelf-h">On the shelves</h2>
+      <div class="unlgrid shelf" id="unlgrid"></div>
+    </div>
+    <div id="ownView" role="tabpanel" aria-labelledby="tabOwn" hidden>
+      <div id="owngrid"></div>
+    </div>
+  </div>
+</div>
+<!-- character info -->
+<div class="sheet" id="chr" role="dialog" aria-modal="true" aria-labelledby="chrName" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top"><h1>Character info</h1><div class="row"><button class="hbtn" id="chrBack" type="button">Back to unlockables</button></div></div>
+    <div class="chr-grid">
+      <div class="chr-left">
+        <div class="chr-stage" aria-hidden="true"><canvas class="chr-cv" id="chrCv" width="64" height="64"></canvas><div class="chr-cap" id="chrCap"></div><div class="chr-spin" id="chrSpin" hidden></div><div class="chr-floor" id="chrFloor" hidden></div></div>
+        <div class="chr-modes" id="chrModes" role="group" aria-label="Show the character">
+          <button class="sbtn" type="button" data-mode="all" aria-pressed="true">All moves</button><button class="sbtn" type="button" data-mode="idle" aria-pressed="false">Idle</button><button class="sbtn" type="button" data-mode="walk" aria-pressed="false">Walk</button><button class="sbtn" type="button" data-mode="turn" aria-pressed="false">Turnaround</button><button class="sbtn" type="button" data-mode="cheer" aria-pressed="false">Cheer</button><button class="sbtn" type="button" data-mode="spin" aria-pressed="false">3D spin</button>
+        </div>
+      </div>
+      <div class="chr-panel">
+        <h2 id="chrName"></h2>
+        <p class="src" id="chrFrom"></p>
+        <h3>Background</h3><p id="chrBio"></p>
+        <h3>Price</h3><p id="chrAch"></p><p class="chr-wallet" id="chrWallet"></p>
+        <button class="sbtn" id="chrEq" type="button"></button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- challenge tower -->
+<div class="sheet" id="mission" role="dialog" aria-modal="true" aria-labelledby="msTitle" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top"><h1 id="msTitle">Mission</h1><div class="row"><span class="vcoins" id="msPay"></span><button class="hbtn" id="msBack" type="button">Back to village</button></div></div>
+    <div class="ms-giver"><div class="ms-pic" id="msPic" aria-hidden="true"></div><div><b id="msWho"></b><p id="msAsk"></p></div></div>
+    <div id="msWork">
+      <p class="sub" id="msGoal"></p>
+      <pre class="ms-show" id="msShow"></pre>
+      <p class="ms-lang">Your <span id="msLang"></span>:</p>
+      <textarea class="ms-in" id="msIn" spellcheck="false" autocapitalize="off" autocorrect="off" rows="5"></textarea>
+      <iframe class="ms-out" id="msOut" sandbox="" title="Preview of your HTML" hidden></iframe>
+      <p class="ms-fb" id="msFb" role="status" aria-live="polite"></p>
+      <pre class="ms-hint" id="msHintBox" hidden></pre>
+      <div class="row"><button class="hbtn" id="msHandIn" type="button">Hand it in</button><button class="hbtn" id="msHint" type="button">Show the answer (half pay)</button></div>
+    </div>
+    <div id="msDone" class="ms-donebox" hidden>
+      <h2>Mission complete</h2><p id="msThanks"></p><p class="ms-got" id="msGot"></p><p class="sub" id="msMore"></p>
+      <button class="hbtn" id="msBack2" type="button">Back to village</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet" id="guild" role="dialog" aria-modal="true" aria-labelledby="gdTitle" hidden>
+  <div class="sheet-in">
+    <div class="sheet-top"><h1 id="gdTitle">Debuggers' Guild</h1><div class="row"><span class="vcoins" id="gdCoins"></span><button class="hbtn" id="gdBack" type="button">Back to village</button></div></div>
+    <div id="gdBoard">
+      <div class="ms-giver"><div class="ms-pic gd-pic" id="gdPic" aria-hidden="true"></div><div><b>D-Bug</b><p id="gdSay"></p></div></div>
+      <div class="gd-stats" id="gdStats"></div>
+      <div class="gd-tabs" id="gdTabs" role="group" aria-label="Case files by language"></div>
+      <div class="gd-grid" id="gdGrid"></div>
+    </div>
+    <div id="gdCase" hidden>
+      <div class="gd-head gd-folder"><div class="gd-hl"><span class="gd-minih" id="gdMini" aria-hidden="true"></span><div><b id="gdCTitle"></b><span id="gdCMeta"></span></div></div><button class="hbtn" id="gdToBoard" type="button">All cases</button></div>
+      <p class="sub" id="gdStory"></p>
+      <div class="gd-main">
+        <div class="gd-left">
+          <div class="gd-code" id="gdCode" role="group" aria-label="The broken program. Pick the line you think is wrong."></div>
+          <div class="gd-panel" id="gdPanel"></div>
+        </div>
+        <div class="gd-right">
+          <p class="gd-lbl" id="gdOutLbl">What happens now</p>
+          <iframe class="gd-frame" id="gdFrame" sandbox="" title="Preview of the page" hidden></iframe>
+          <pre class="gd-out" id="gdOut" aria-live="polite"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tower" id="tower" role="dialog" aria-modal="true" aria-label="Challenge Tower" hidden>
+  <canvas id="twCv" aria-hidden="true"></canvas>
+  <div class="tw-foe" id="twFoe" aria-hidden="true"></div>
+  <div class="tw-hud">
+    <span class="tw-chip" id="twFloor">Floor 1</span><span class="tw-chip" id="twBest">Best 0</span><span class="tw-chip" id="twCoins">Coins 0</span>
+    <span class="tw-time"><span class="tw-bar" id="twBar"><i></i></span><b id="twTime">30.0s</b></span>
+    <button class="hbtn" id="twExit" type="button">Leave tower</button>
+  </div>
+  <div class="tw-panel" id="twPanel">
+    <div class="tw-top"><b id="twName"></b><span id="twLang"></span></div>
+    <p class="tw-goal" id="twGoal"></p>
+    <div class="editor"><div class="code" id="twCode"></div><textarea id="twIn" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" disabled></textarea></div>
+    <p class="feedback" id="twFb" role="status" aria-live="polite"></p>
+  </div>
+  <div class="tw-card" id="twStart">
+    <h2>Challenge Tower</h2>
+    <p>Climb as high as you can. Each floor has one enemy. Type its code before the 30 seconds run out, or the run ends. Early floors show the code, later floors only describe it.</p>
+    <div class="tw-langs" id="twLangs" role="group" aria-label="Languages"><button class="hbtn" type="button" data-l="mixed" aria-pressed="true">Mixed</button><button class="hbtn" type="button" data-l="html" aria-pressed="false">HTML</button><button class="hbtn" type="button" data-l="css" aria-pressed="false">CSS</button><button class="hbtn" type="button" data-l="cpp" aria-pressed="false">C++</button><button class="hbtn" type="button" data-l="js" aria-pressed="false">JavaScript</button><button class="hbtn" type="button" data-l="py" aria-pressed="false">Python</button></div>
+    <p class="tw-best" id="twStartBest"></p>
+    <button class="btn" id="twGo" type="button">Enter the tower</button>
+    <button class="hbtn" id="twExit2" type="button">Back to title</button>
+    <p class="tw-pay">Each floor pays 5 coins, and floors 10, 20, 30 and so on pay 10.</p>
+    <p class="tw-test">Test build: type HACK to beat an enemy (it still pays coins).</p>
+  </div>
+  <div class="tw-card" id="twOver" hidden>
+    <h2>Time's up</h2>
+    <p id="twOverMsg"></p><p class="tw-best" id="twOverBest"></p>
+    <button class="btn" id="twAgain" type="button">Try again</button>
+    <button class="hbtn" id="twExit3" type="button">Leave tower</button>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- the forge -->
+<div class="sheet" id="sbx" role="dialog" aria-modal="true" aria-labelledby="sbxTitle" hidden>
+  <div class="sheet-in fg">
+    <div class="sheet-top"><h1 id="sbxTitle">The Forge</h1><div class="row"><button class="hbtn" id="sClose" type="button">Back to village</button></div></div>
+    <div class="fg-smith"><div class="fg-pic" id="fgPic" aria-hidden="true"></div><div class="fg-bub"><b>Brynn the Smith</b><span id="fgSay"></span></div></div>
+    <div class="fg-tabs" id="fgTabs" role="tablist" aria-label="Language"></div>
+    <div class="fg-bar">
+      <input id="fgName" type="text" maxlength="28" aria-label="Project name" autocomplete="off" spellcheck="false">
+      <span class="fg-save" id="fgSave" aria-live="polite">Saved</span>
+      <select id="fgStart" aria-label="Start from an example"></select>
+      <button class="hbtn" id="fgNew" type="button">New project</button>
+      <button class="hbtn" id="fgDl" type="button">Download</button>
+    </div>
+    <div class="sbx">
+      <div class="fg-ed"><textarea id="sbxIn" spellcheck="false" aria-label="Your code" autocapitalize="off" autocorrect="off"></textarea><button class="hbtn fg-run" id="fgRun" type="button">Run &#9654;</button></div>
+      <div class="fg-out"><div class="fg-label" id="fgOutLabel">Live preview</div><iframe id="sbxOut" sandbox="" title="Preview of your HTML"></iframe><pre id="fgCon" hidden aria-live="polite"></pre></div>
+    </div>
+    <div class="fg-list"><h2>My projects</h2><div id="fgProj"></div></div>
+  </div>
+</div>
+
+<!-- the Builders' Plot -->
+<div class="sheet" id="plot" role="dialog" aria-modal="true" aria-labelledby="plotTitle" hidden>
+  <div class="sheet-in pl">
+    <div class="sheet-top"><h1 id="plotTitle">The Builders' Plot</h1><div class="row"><button class="hbtn" id="plVisit" type="button">Visit your plot</button><button class="hbtn" id="plClose" type="button">Back to village</button></div></div>
+    <p class="pl-intro" id="plIntro"></p>
+    <div class="fg-tabs" id="plTabs" role="tablist" aria-label="Language"></div>
+    <div class="pl-main">
+      <div class="fg-ed"><textarea id="plIn" spellcheck="false" aria-label="Your code" autocapitalize="off" autocorrect="off"></textarea><button class="hbtn fg-run" id="plRun" type="button">Run &#9654;</button></div>
+      <div class="pl-side">
+        <canvas id="plView" width="320" height="170" role="img" aria-label="Preview of your plot: house, garden, helper and fireworks"></canvas>
+        <div class="pl-act"><span class="fg-save" id="plLive" aria-live="polite">Updated</span><button class="hbtn" id="plWatch" type="button">Watch</button><button class="hbtn" id="plReset" type="button">Start again</button></div>
+        <pre id="plOut" aria-live="polite" hidden></pre>
+        <ul id="plMsgs" class="pl-msgs"></ul>
+      </div>
+    </div>
+    <div class="pl-tools"><h2>What you can use</h2><ul id="plTools"></ul></div>
+  </div>
+</div>
+
+<!-- the boss test -->
+<div class="sheet" id="mco" role="dialog" aria-modal="true" aria-labelledby="mcoTitle" hidden>
+  <div class="sheet-in plc">
+    <div class="sheet-top"><h1 id="mcoTitle">The Coachman</h1></div>
+    <div id="mcoBody" class="plc-body"></div>
+    <div class="row"><button class="hbtn" id="mcoGo" type="button">Yes</button><button class="hbtn" id="mcoNo" type="button">No</button></div>
+  </div>
+</div>
+<div class="mt mr" id="mRide" aria-label="The carriage ride" hidden><canvas id="mrCv" aria-hidden="true"></canvas></div>
+<div class="mt" id="mTitle" role="dialog" aria-modal="true" aria-label="Murder at SQLeviathan Mansion" hidden>
+  <canvas id="mtCv" aria-hidden="true"></canvas>
+  <div class="mt-in">
+    <p class="mt-kick">&lt;/&gt; a murder mystery</p>
+    <h1 class="mt-logo" aria-label="Murder at SQLeviathan Mansion"><span class="mt-l1">MURDER AT</span><span class="mt-l2" id="mtL2" aria-hidden="true"></span><span class="mt-l3">MANSION</span></h1>
+    <p class="mt-tag">Someone here is lying. Query the truth.</p>
+    <button class="btn big mt-btn" id="mtGo" type="button">Step inside</button>
+  </div>
+</div>
+<div class="sheet" id="plc" role="dialog" aria-modal="true" aria-labelledby="plcTitle" hidden>
+  <div class="sheet-in plc">
+    <div class="sheet-top"><h1 id="plcTitle">Boss test</h1></div>
+    <div id="plcBody" class="plc-body"></div>
+    <div class="row"><button class="hbtn" id="plcGo" type="button">Take the boss test</button><button class="hbtn" id="plcNo" type="button">Not now</button></div>
+  </div>
+</div>
+
+<!-- the Skill Tree -->
+<div class="sheet" id="skl" role="dialog" aria-modal="true" aria-labelledby="sklTitle" hidden>
+  <div class="sheet-in sk">
+    <div class="sheet-top"><h1 id="sklTitle">The Skill Tree</h1><div class="row"><button class="hbtn" id="skClose" type="button">Back to village</button></div></div>
+    <p class="pl-intro" id="skSub"></p>
+    <div class="sk-top"><div class="sk-spider" id="skSpider"></div>
+      <ul class="sk-key" aria-label="Key"><li><i class="k locked">&#128274;</i> Not learned yet</li><li><i class="k learned">&#9679;</i> Learned</li><li><i class="k master">&#9733;</i> Mastered</li><li><i class="k due">&#9679;</i> Review due</li></ul></div>
+    <div class="fg-tabs" id="skTabs" role="tablist" aria-label="Language"></div>
+    <div class="sk-main"><div class="sk-tree" id="skTree"></div><aside class="sk-detail" id="skDetail" aria-live="polite"></aside></div>
+  </div>
+</div>
+
+<!-- opening story -->
+<div class="cine" id="cine" role="dialog" aria-modal="true" aria-label="Cutscene" hidden>
+  <div class="cine-world" id="cineWorld">
+    <canvas id="cineBg" aria-hidden="true"></canvas>
+    <div class="cine-sun" aria-hidden="true"></div>
+    <div class="cine-stage" id="cineStage"><div class="cine-chars"><div class="cine-l" id="cineL"></div><div class="cine-r" id="cineR"></div></div><div class="cine-debris" id="cineDebris" aria-hidden="true"></div></div>
+    <div class="cine-cracks" id="cineCracks" aria-hidden="true"></div><div class="cine-dust" id="cineDust" aria-hidden="true"></div><div class="cine-vig" aria-hidden="true"></div>
+  </div>
+  <div class="cine-bar" aria-hidden="true"></div>
+  <div class="cine-flash" id="cineFlash" aria-hidden="true"></div><div class="cine-black" id="cineBlack" aria-hidden="true"></div>
+  <div class="cine-box"><b id="cineWho"></b><p id="cineTxt" aria-live="polite"></p><span class="cine-hint">Click or press Space to continue</span></div>
+  <button class="hbtn cine-skip" id="cineSkip" type="button">Skip</button>
+</div>
+<div class="story" id="story" role="dialog" aria-modal="true" aria-label="Opening story" hidden>
+  <canvas id="scv" aria-hidden="true"></canvas>
+  <div class="cap">
+    <div class="capbox"><p id="capText" aria-hidden="true"></p><p class="sr" id="capSR" aria-live="polite"></p></div>
+    <div class="capbar"><div class="dots" id="dots" aria-hidden="true"></div><div class="sbtns"><button class="hbtn" id="sNext" type="button">Next</button><button class="hbtn" id="sSkip" type="button">Skip</button></div></div>
+  </div>
+</div>
+
+<!-- title and language select -->
+<div class="village" id="village" tabindex="-1" role="dialog" aria-modal="true" aria-label="Codetopia village" hidden>
+  <header class="vtop">
+    <button class="hbtn" id="vTitle" type="button">&larr; Title screen</button>
+    <div class="vhead"><h1>Codetopia Village</h1><p id="vMood"></p></div>
+    <span class="vcoins" id="vMis"></span>
+    <span class="vcoins" id="vCoins"></span>
+    <button class="hbtn sndbtn" type="button">Sound</button>
+    <button class="hbtn" id="vAdmin" type="button" aria-pressed="false">Admin</button>
+  </header>
+  <div class="vstage" id="vStage">
+    <canvas id="vcv" aria-hidden="true"></canvas>
+    <div class="vbub" id="vBub" hidden><b></b><span></span></div>
+    <button class="vprompt" id="vPrompt" type="button" hidden></button>
+  </div>
+  <nav class="vnav" id="vNav" aria-label="Places in the village"></nav>
+  <p class="vhelp">Walk with &larr; &rarr; or A D. Press E to talk or go in. Or tap anywhere on the street.</p>
+</div>
+
+<div class="intro" id="intro" aria-label="Codetopia">
+  <canvas id="icv" aria-hidden="true"></canvas>
+  <div class="glyphs" id="glyphs" aria-hidden="true"></div>
+  <div class="tscene" aria-hidden="true">
+    <div class="a" id="tBat"><div class="hop" id="tBatB"></div></div>
+    <div class="a" id="tHero"><div class="hop" id="tHeroB"></div></div>
+    <span class="bolt">&lt;/&gt;</span>
+    <div class="a" id="tSlime"><div class="hop" id="tSlimeB"></div></div>
+  </div>
+  <section class="panel" id="pTitle">
+    <p class="kicker">&lt;/&gt; a learn-to-code RPG</p>
+    <h1 class="logo" id="logo" aria-label="Codetopia"></h1>
+    <p class="tagline">Battle bugs. Cast code. Learn to build.</p>
+    <button class="btn big" id="play" type="button">Play</button>
+    <p class="press">Press Enter or tap Play</p>
+    <button class="hbtn" id="replay" type="button">Watch the story</button>
+    <button class="hbtn sndbtn" type="button">Sound</button>
+    <p class="acct" id="acct" hidden><span id="acName"></span><button class="hbtn" id="acCur" type="button">Change curriculum</button><button class="hbtn" id="acOut" type="button">Log out</button></p>
+  </section>
+  <section class="panel" id="pAuth" aria-labelledby="aTitle" hidden>
+    <p class="kicker">&lt;/&gt; a learn-to-code RPG</p>
+    <h2 id="aTitle">Welcome to Codetopia</h2>
+    <div class="px-box authbox">
+      <div class="atabs" role="tablist" aria-label="Account"><button class="atab" id="aTabIn" role="tab" type="button" aria-selected="true">Log in</button><button class="atab" id="aTabUp" role="tab" type="button" aria-selected="false">Sign up</button></div>
+      <form id="aForm" novalidate>
+        <label class="fld">Username<input id="aUser" type="text" autocomplete="username" maxlength="20" autocapitalize="off" autocorrect="off" spellcheck="false"></label>
+        <label class="fld">Password<input id="aPass" type="password" autocomplete="current-password" maxlength="100"></label>
+        <label class="fld" id="aConfWrap" hidden>Confirm password<input id="aConf" type="password" autocomplete="new-password" maxlength="100"></label>
+        <label class="chk"><input type="checkbox" id="aShow"> Show password</label>
+        <label class="chk"><input type="checkbox" id="aKeep"> Keep me signed in on this browser</label>
+        <p class="aerr" id="aErr" role="alert"></p>
+        <button class="btn" id="aGo" type="submit">Log in</button>
+      </form>
+      <button class="hbtn" id="aGuest" type="button">Continue as guest</button>
+      <p class="press">Accounts are saved in this browser only. A guest keeps progress here too, but without a name.</p>
+    </div>
+    <button class="hbtn sndbtn" type="button">Sound</button>
+  </section>
+  <section class="panel" id="pPick" aria-labelledby="pkTitle" hidden>
+    <p class="kicker" id="pkKick">&lt;/&gt; your curriculum</p>
+    <h2 id="pkTitle">What do you want to learn?</h2>
+    <p class="lsub" id="pkSub">Tick the languages you want to study, or take the full story and learn them all in order. You can change this later.</p>
+    <div class="pkgrid" id="pkGrid" role="group" aria-label="Languages to study"></div>
+    <button class="pk pkstory" id="pkStory" type="button" role="checkbox" aria-checked="false"><i class="pkbox" aria-hidden="true"></i><span class="pkt"><b>Story mode</b><small>All five languages, one after another, with the full story</small></span></button>
+    <p class="lsub pknote" id="pkNote" role="status"></p>
+    <div class="btns"><button class="btn" id="pkGo" type="button" disabled>Continue</button><button class="hbtn" id="pkCancel" type="button" hidden>Cancel</button></div>
+  </section>
+</div>
+
+<!-- Scripts are plain (non-module) so the game also runs when index.html is opened straight from disk.
+     Order matters: data first, then engine, game, battle and UI, then main.js. -->
+<script src="js/core/dom.js"></script>
+<script src="js/data/sprites.js"></script>
+<script src="js/data/mentors.js"></script>
+<script src="js/data/missions.js"></script>
+<script src="js/data/guild-cases.js"></script>
+<script src="js/data/skin-art.js"></script>
+<script src="js/data/mystery-art.js"></script>
+<script src="js/core/sprite-render.js"></script>
+<script src="js/data/html-concepts.js"></script>
+<script src="js/data/html-levels.js"></script>
+<script src="js/data/html-spells.js"></script>
+<script src="js/data/css-concepts.js"></script>
+<script src="js/data/css-spells.js"></script>
+<script src="js/data/css-levels.js"></script>
+<script src="js/data/cpp-concepts.js"></script>
+<script src="js/data/cpp-spells.js"></script>
+<script src="js/data/cpp-levels.js"></script>
+<script src="js/data/js-concepts.js"></script>
+<script src="js/data/js-spells.js"></script>
+<script src="js/data/js-levels.js"></script>
+<script src="js/data/py-concepts.js"></script>
+<script src="js/data/py-spells.js"></script>
+<script src="js/data/py-levels.js"></script>
+<script src="js/data/tower-art.js"></script>
+<script src="js/data/game-constants.js"></script>
+<script src="js/engine/analysis-html.js"></script>
+<script src="js/engine/analysis-css.js"></script>
+<script src="js/engine/analysis-cpp.js"></script>
+<script src="js/engine/analysis-js.js"></script>
+<script src="js/engine/analysis-py.js"></script>
+<script src="js/engine/tracks.js"></script>
+<script src="js/engine/save.js"></script>
+<script src="js/engine/accounts.js"></script>
+<script src="js/game/skins.js"></script>
+<script src="js/game/mastery.js"></script>
+<script src="js/game/state.js"></script>
+<script src="js/ui/backdrop.js"></script>
+<script src="js/ui/hud.js"></script>
+<script src="js/battle/spell-select.js"></script>
+<script src="js/battle/editor.js"></script>
+<script src="js/battle/effects.js"></script>
+<script src="js/battle/battle-anim.js"></script>
+<script src="js/battle/victory-anim.js"></script>
+<script src="js/battle/combat.js"></script>
+<script src="js/battle/levels.js"></script>
+<script src="js/ui/worldmap.js"></script>
+<script src="js/ui/worldmap-keep.js"></script>
+<script src="js/ui/worldmap-roof.js"></script>
+<script src="js/ui/sheets.js"></script>
+<script src="js/ui/shop.js"></script>
+<script src="js/ui/title-language.js"></script>
+<script src="js/ui/village-paint.js"></script>
+<script src="js/game/walk.js"></script>
+<script src="js/ui/village-art.js"></script>
+<script src="js/ui/village-scenes.js"></script>
+<script src="js/ui/village-ambient.js"></script>
+<script src="js/ui/village-npc.js"></script>
+<script src="js/ui/char-anim.js"></script>
+<script src="js/plot/plot-data.js"></script>
+<script src="js/plot/plot-run.js"></script>
+<script src="js/plot/plot-draw.js"></script>
+<script src="js/plot/plot-studio.js"></script>
+<script src="js/ui/skills.js"></script>
+<script src="js/ui/village.js"></script>
+<script src="js/ui/mansion.js"></script>
+<script src="js/ui/mansion-ride.js"></script>
+<script src="js/ui/missions-ui.js"></script>
+<script src="js/forge/py-run.js"></script>
+<script src="js/forge/cpp-run.js"></script>
+<script src="js/forge/forge.js"></script>
+<script src="js/audio/sound.js"></script>
+<script src="js/audio/music.js"></script>
+<script src="js/audio/sound-ui.js"></script>
+<script src="js/ui/story.js"></script>
+<script src="js/ui/story-cine.js"></script>
+<script src="js/ui/cine.js"></script>
+<script src="js/ui/mentors.js"></script>
+<script src="js/tower/tower.js"></script>
+<script src="js/ui/guild-art.js"></script>
+<script src="js/ui/guild.js"></script>
+<script src="js/ui/guild-anim.js"></script>
+<script src="js/ui/auth.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

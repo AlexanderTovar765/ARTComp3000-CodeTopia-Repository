@@ -1,0 +1,35 @@
+/* Sign up, log in and the curriculum picker. These sit inside the title screen (#intro), so they share its night sky. */
+#intro.authing #pTitle,#intro.authing .tscene{display:none}
+.panel[hidden]{display:none!important}
+.px-box,.pk{--e:var(--line);box-shadow:-3px 0 0 0 var(--e),3px 0 0 0 var(--e),0 -3px 0 0 var(--e),0 3px 0 0 var(--e),0 6px 0 0 var(--shadow)}
+.authbox{width:min(400px,calc(100vw - 48px));background:#17123a;--e:#4a3f94;padding:16px 18px 14px;display:grid;gap:12px;margin:3px;text-align:left}
+.atabs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.atab{font:600 17px var(--font-ui);color:var(--muted);background:#1f1850;border:0;padding:8px 6px;cursor:pointer;box-shadow:0 3px 0 var(--shadow)}
+.atab[aria-selected=true]{color:#2a1d00;background:var(--amber)}
+.atab:focus-visible,.pk:focus-visible{outline:3px solid var(--sky);outline-offset:3px}
+#aForm{display:grid;gap:10px}
+.fld{display:grid;gap:4px;font:600 14px var(--font-ui);color:var(--muted)}
+.fld input{box-sizing:border-box;width:100%;font:500 16px var(--font-code);color:var(--text);background:#0f0b26;border:0;padding:9px 10px;box-shadow:-3px 0 0 0 #5a5a78,3px 0 0 0 #5a5a78,0 -3px 0 0 #5a5a78,0 3px 0 0 #5a5a78;margin:3px 0;min-width:0}
+.fld input:focus{outline:none;box-shadow:-3px 0 0 0 var(--amber),3px 0 0 0 var(--amber),0 -3px 0 0 var(--amber),0 3px 0 0 var(--amber)}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text);cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--amber);margin:0}
+.aerr{margin:0;min-height:1.3em;font-size:14px;color:var(--coral)}
+.authbox .btn{width:100%}
+.authbox .hbtn{justify-self:center}
+.authbox .press{text-align:center}
+.acct{margin:0;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;font:600 15px var(--font-ui);color:var(--muted);text-shadow:0 1px 0 var(--shadow)}
+.acct #acName{color:var(--amber)}
+/* the curriculum picker: each language is a check box card */
+.pkgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;width:min(760px,calc(100vw - 48px))}
+.pk{--lc:var(--line);font-family:var(--font-ui);color:var(--text);background:#17123a;border:0;margin:3px;padding:12px 14px;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;position:relative}
+.pk::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:var(--lc)}
+.pk:hover{--e:var(--lc)}
+.pk[aria-checked=true]{background:#2d2470;--e:var(--lc)}
+.pkbox{flex:none;width:22px;height:22px;background:#0f0b26;box-shadow:-3px 0 0 0 #8a8aa8,3px 0 0 0 #8a8aa8,0 -3px 0 0 #8a8aa8,0 3px 0 0 #8a8aa8;margin:3px;position:relative}
+.pk[aria-checked=true] .pkbox{background:var(--lime);box-shadow:-3px 0 0 0 #5a8a1a,3px 0 0 0 #5a8a1a,0 -3px 0 0 #5a8a1a,0 3px 0 0 #5a8a1a}
+.pk[aria-checked=true] .pkbox::after{content:"";position:absolute;left:5px;top:2px;width:6px;height:11px;border:solid #1a2a05;border-width:0 4px 4px 0;transform:rotate(40deg)}
+.pkt{display:grid;gap:2px}.pkt b{font:600 20px var(--font-ui)}.pkt small{font:400 13px var(--font-body);color:var(--muted)}
+.pkstory{width:min(760px,calc(100vw - 48px));--lc:var(--amber);box-sizing:border-box}
+.pknote{min-height:2.6em;color:var(--muted)}
+@media (max-width:520px){.panel{padding-bottom:12vh}}
+#pkSub,#pkNote{background:rgba(15,11,38,.62);padding:6px 12px}

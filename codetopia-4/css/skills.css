@@ -1,0 +1,43 @@
+/* The Skill Tree sheet */
+.sk .fgtab small{font-family:var(--font-body,inherit);font-size:12px;color:var(--muted);margin-left:4px}
+.sk .fgtab[aria-selected="true"] small{color:var(--amber)}
+.sk-top{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.sk-spider{width:240px;max-width:100%}
+.sk-spider svg{width:100%;height:auto;display:block}
+.sk-key{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
+.sk-key li{display:flex;gap:8px;align-items:center}
+.sk-key .k{font-style:normal;display:inline-grid;place-items:center;width:22px;height:22px;border:2px solid var(--line);border-radius:2px;background:var(--panel);font-size:12px}
+.k.learned,.sk-node.learned i{color:#7ae08f}.k.master,.sk-node.master i{color:#ffd23f}.k.locked,.sk-node.locked i{color:var(--muted)}.k.due{color:#ff9a5a;border-color:#ff9a5a}
+.sk-main{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.sk-main{grid-template-columns:minmax(0,1fr)}}
+.sk-tree{--sk:#7ae08f;position:relative;display:grid;gap:0;padding-left:14px}
+.sk-tree::before{content:"";position:absolute;left:5px;top:12px;bottom:12px;width:4px;background:linear-gradient(var(--sk),#3a3170);border-radius:2px;opacity:.8}
+.sk-tier{position:relative;display:grid;grid-template-columns:84px minmax(0,1fr);gap:10px;padding:8px 0 8px 14px}
+.sk-tier::before{content:"";position:absolute;left:-9px;top:20px;width:20px;height:4px;background:var(--sk);opacity:.8}
+.sk-lv{display:grid;align-content:start;gap:2px;font-size:14px}
+.sk-lv b{font-family:var(--font-ui);font-weight:400;color:var(--amber)}
+.sk-lv span{font-size:12px;color:var(--lime)}
+.sk-tier.here .sk-lv b::before{content:"\25B6 "}
+.sk-nodes{display:flex;flex-wrap:wrap;gap:8px}
+.sk-node{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:14px;color:var(--c-text);background:var(--panel);border:2px solid var(--line);border-radius:2px;padding:6px 10px;cursor:pointer;box-shadow:0 3px 0 var(--shadow);text-align:left}
+.sk-node i{font-style:normal;font-size:12px}
+.sk-node.locked{opacity:.6}
+.sk-node.learned{border-color:#4a9a62;background:#1c2f2c}
+.sk-node.master{border-color:#ffd23f;background:#33290f;box-shadow:0 3px 0 var(--shadow),0 0 10px rgba(255,210,63,.35)}
+.sk-node.due{border-color:#ff9a5a}
+.sk-node.sel{outline:3px solid var(--amber);outline-offset:2px}
+.sk-node:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+@media (prefers-reduced-motion:no-preference){.sk-node.due{animation:skPulse 1.6s ease-in-out infinite}}
+@keyframes skPulse{50%{box-shadow:0 3px 0 var(--shadow),0 0 12px rgba(255,154,90,.7)}}
+.sk-detail{position:sticky;top:12px;background:var(--panel);border:2px solid var(--line);border-radius:2px;padding:12px 14px;display:grid;gap:8px;font-size:15px}
+.sk-detail h2{margin:0;font-family:var(--font-ui);font-weight:400;font-size:22px;color:var(--amber)}
+.sk-detail p{margin:0}
+.sk-stars{color:#ffd23f;letter-spacing:2px}
+.sk-chips code{display:inline-block;margin:0 6px 4px 0;padding:2px 8px;background:#120e2b;border:2px solid var(--line);border-radius:2px;font:500 13px var(--font-code)}
+.sk-unl{color:var(--lime);font-size:14px}
+.sk-hint{color:var(--muted)}
+
+/* the boss test dialog */
+.plc{max-width:560px}
+.plc-body{display:grid;gap:10px;font-size:16px}
+.plc-body p{margin:0}
